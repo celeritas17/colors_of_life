@@ -31,27 +31,37 @@ ColorBoard = function(){
 	for (var i = 0; i < 100; i++){
 		this.board[i] = new Array();
 		for (var j = 0; j < 100; j++){
-			//this. board[i][j] = new Cell(255, 0, 0);
-			if (j == 0) {this.board[i][j] = new Cell(255,0,0);}
-			else { this.board[i][j] = new Cell(255, 255, 255);}	
+			//this.board[i][j] = new Cell(255, 255, 255);
+			//var my_red = Math.random()*256;
+			//var my_blue = Math.random()*256;
+			//var my_green = Math.random()*256;
+			//this. board[i][j] = new Cell(my_red, my_green, my_blue);
+			if (i < 49)  {this.board[i][j] = new Cell(255,0,0);}
+			else if (j < 49) {this.board[i][j] = new Cell(0,0,255);}
+			else {this.board[i][j] = new Cell(0, 255, 0);}	
 		}
 	}
 }
 
-ColorBoard.prototype.iterate = function(k, board){
+ColorBoard.prototype.iterate = function(k){
 	//var divCount = 10;
-	for (var i = 0; i < 100; i++){
-		for (var j = 99; j > 0; j--){
-			var new_red = k + 5;
-			var new_blue = k/5;
-			var new_green = k/7;
-			this.board[i][j].updateColors(this.board[i][j-1].getRed() -5, this.board[i][j-1].getGreen(),this.board[i][j-1].getBlue()+5);
+	var self = this;
+	for (var i = 1; i < 99; i++){
+		for (var j = 98; j > 1; j--){
+			
+			//	debugger;
+			var new_red = Math.round(this.board[i-1][j].getRed() + this.board[i-1][j+1].getRed() + this.board[i-1][j-1].getRed())/3;
+			var new_green = Math.round(this.board[i-1][j-1].getGreen() + this.board[i+1][j-1].getGreen() + this.board[i][j-1].getGreen())/3;
+			var new_blue = Math.round(this.board[i][j+1].getBlue() + this.board[i-1][j+1].getBlue() + this.board[i+1][j+1].getBlue())/3;
+			//var new_red = (k*k*(Math.round(this.board[i][j-1].getRed() + this.board[i][j+1].getRed()+ this.board[i+1][j].getRed()+this.board[i-1][j].getRed() +this.board[i+1][j-1].getRed() + this.board[i-1][j-1].getRed() + this.board[i+1][j+1].getRed() + this.board[i-1][j+1].getRed())/8))%255;
+			//var new_green = (k*(Math.round(this.board[i][j-1].getGreen() + this.board[i][j+1].getGreen() + this.board[i+1][j].getGreen()+this.board[i-1][j].getGreen() +this.board[i+1][j-1].getGreen() + this.board[i-1][j-1].getGreen() + this.board[i+1][j+1].getGreen() + this.board[i-1][j+1].getGreen())/8))%255;
+			//var new_blue = (7*k*(Math.round(this.board[i][j-1].getBlue() + this.board[i][j+1].getBlue() + this.board[i+1][j].getBlue()+this.board[i-1][j].getBlue() + this.board[i+1][j-1].getBlue() + this.board[i-1][j-1].getBlue() + this.board[i+1][j+1].getBlue() + this.board[i-1][j+1].getBlue())/8))%255;
+			this.board[i][j].updateColors(new_red, new_green, new_blue);
 			$('div#' + i.toString() + "r" + j.toString()).css("background-color", "rgb(" + this.board[i][j].getRed() + "," +this.board[i][j].getGreen() + "," +this.board[i][j].getBlue() +")");
 			//divCount++;
 		}
 	}
-	console.log(k);
-	setTimeout(function(){board.iterate(k + 10, board)}, 5)
+	setTimeout(function(){self.iterate(k + 1)}, 5);
 
 	//for (var p = 0; p < $('div.cell').length; p++){
 		//$("div.cell")[p].css("background-color", "rgb(" +  + "," +  + "," +  + ")");
@@ -86,11 +96,12 @@ ColorBoard.prototype.draw = function(){
 	//var divCount = 10;
 	var left_offset = 400;
 	var top_offset = 75;
-	document.write("<div>");
+	document.write("<div id=\"main\">");
+	
 	for (var i = 0; i < 100; i++){
 		left_offset = 400;
 		for (var j = 0; j < 100; j++){
-			document.write("<div id=\"" + i.toString() + "r" + j.toString() + "\" class=\"cell\" style=\"background-color:rgb("+ this.board[i][j].getRed() + "," + 
+			document.write("<div id=\"" + i.toString() + "r" + j.toString() + "\" class=\"cell\" style=\"background-color:rgb(" + this.board[i][j].getRed() + "," + 
 				this.board[i][j].getGreen() + "," + this.board[i][j].getBlue() + "); top:"+
 				top_offset +"px; left: " + left_offset + "px;\"></div>");
 			left_offset += 5;
@@ -98,13 +109,46 @@ ColorBoard.prototype.draw = function(){
 		}
 		top_offset += 5;
 	}
+	
 	document.write("</div>");
 	console.log("Finished drawing");
 }
 
+ColorBoard.prototype.addClickHandler = function(i, j){
+	var self = this;
+	$('div#' + i.toString() + "r" + j.toString()).click(function(){
+				self.board[i][j].updateColors(0, 0, 255);
+				console.log("you clicked a cell! " + i +" "+j)
+				$('div#' + i.toString() + "r" + j.toString()).css("background-color", "rgb(" + self.board[i][j].getRed() + "," + self.board[i][j].getGreen() + "," + self.board[i][j].getBlue() +")");
+			                    										});
+
+}
+
+ColorBoard.prototype.addDblClickHandler = function(i, j){
+	var self = this;
+	$('div#' + i.toString() + "r" + j.toString()).dblclick(function(){
+				self.board[i][j].updateColors(0, 255, 0);
+				console.log("you clicked a cell! " + i +" "+j)
+				$('div#' + i.toString() + "r" + j.toString()).css("background-color", "rgb(" + self.board[i][j].getRed() + "," + self.board[i][j].getGreen() + "," + self.board[i][j].getBlue() +")");
+			                    										});
+
+}
+
+ColorBoard.prototype.stateChange = function(){
+	var self = this;
+	for (var i = 0; i < 99; i++){
+		for (var j = 0; j < 99; j++){
+			self.addClickHandler(i, j);
+			self.addDblClickHandler(i, j);
+		}
+	}
+	console.log("stateChange finished executing")
+}	
 var test = new ColorBoard();
 test.draw();
-setTimeout(function(){test.iterate(10, test);}, 1000);
+test.stateChange();
+
+//setTimeout(function(){test.iterate(10);}, 1000);
 //setTimeout(function(){test.draw()}, 3000);
 //setTimeout(function(){test.iterate()}, 2000);
 //setTimeout(function(){test.draw()}, 3000);
