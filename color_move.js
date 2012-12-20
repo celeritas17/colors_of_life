@@ -5,6 +5,7 @@ Cell = function(red, green, blue) {
 	this.green = green; // 0-255
 	this.blue = blue; // 0-255
 	this.alive = false;// all should be dead when board drawn
+	this.new_alive = false;
 }
 
 
@@ -26,17 +27,17 @@ Cell.prototype.getBlue = function(){
 	return this.blue;
 }
 
+Cell.prototype.toggle = function() {
+	// return a new Cell object
+}
 
 ColorBoard = function(){
 	this.board = [];
 
-	for (var i = 0; i < 100; i++){
-		this.board[i] = new Array();
-		for (var j = 0; j < 100; j++){
-			this.board[i][j] = new Cell(255, 255, 255);
-			//var my_red = Math.random()*256;
-			//var my_blue = Math.random()*256;
-			//var my_green = Math.random()*256;
+	for (var i = 0; i < 60; i++){
+		this.board[i] = [];
+		for (var j = 0; j < 70; j++){
+			this.board[i].push(new Cell(0, 0, 0));
 			//this. board[i][j] = new Cell(my_red, my_green, my_blue);
 			//if (i < 49)  {this.board[i][j] = new Cell(255,0,0);}
 			//else if (j < 49) {this.board[i][j] = new Cell(0,0,255);}
@@ -45,8 +46,18 @@ ColorBoard = function(){
 	}
 }
 
+ColorBoard.prototype.getCellByPosition = function(i, j) {
+	// return Cell
+}
+
+Cell.prototype.isBoundary = function(board) {
+
+}
+
+
+
 ColorBoard.prototype.getNeighbors = function(i,j){
-	//Returns coordinates of all neighboring cells in an array
+	//Returns coordinates of all neighboring cells, in an array
 
 	var neighbors = [];
 	var adjacents = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
@@ -55,21 +66,46 @@ ColorBoard.prototype.getNeighbors = function(i,j){
 		return [pair[0] + i, pair[1] + j];
 	};
 
-	neighbors = adjacents.map(addToIj);
+	///--------->neighbors = adjacents.map(addToIj);
 	//console.log(neighbors);
 
-	return neighbors;
+	return adjacents.map(addToIj).map(getCellByPosition)
 }
 
-ColorBoard.prototype.checkAlive = function(neighbors,alive){
+
+Cell.prototype.isAlive = function() {
+
+}
+
+Cell.prototype.isDead = function() {
+
+}
+
+Cell.prototype.getNeighbors = function() {
+
+}
+
+
+
+ColorBoard.prototype.checkAlive = function(alive, i, j) {
 	//Return True <-> Cell is alive in next stage
 	var self = this;
-	var alive_neighbors = 0;
-	var is_alive = new Boolean()
+	var alive_neighbors = 0; // So we don't count the cell in question as a neighbor!
+
+	var is_alive = new Boolean();
+
+	for (var x = -1; x < 2; x++){   // Warning: this counts the cell in question as a neighbor!
+		for (var y = -1; y < 2; y++){
+			//console.log(i+x);
+			//console.log(j+y);
+			if (self.board[i + x][j + y].alive == true)
+				alive_neighbors++;
+		}
+	}
 
 	//Check how many of the neighbors are alive
 	
-	neighbors.map(alive_getter).reduce(sum,)
+	//-------> neighbors.map(alive_getter).reduce(sum,)
 	// for (var k = 0; k < neighbors.length; k++){
 	// 			if (self.board[neighbors[k][0]][neighbors[k][1]].alive == true)
 	// 				alive_neighbors++;
@@ -78,28 +114,54 @@ ColorBoard.prototype.checkAlive = function(neighbors,alive){
 
 	// If state == alive & alive_neighbors is in {2,3} => Alive; if state == dead & alive_neighbors = 3 => ALIVE! else dead
 	//living test
-		    if ((alive_neighbors == 2 || alive_neighbors == 3) && alive == true){
+	//debugger;
+		    if ((alive_neighbors >= 3 && alive_neighbors <= 4) && alive == true){
 		    	is_alive = true;
+		    	
 		    } 
 		    else if (alive_neighbors == 3 && alive == false){
 		    	is_alive = true;
 		    }
-
 		    return is_alive;
 		    
 	}
 
 ColorBoard.prototype.iterate = function(k){
-	//var divCount = 10;
 	var self = this;
-	var alive_neighbors = 0;
-	var red_count = 0;
-	var blue_count =0;
-	var green_count = 0;
+	//var alive_neighbors = 0;
+	//var red_count = 0;
+	//var blue_count =0;
+	//var green_count = 0;
 
-	for (var i = 1; i < 99; i++){
-		for (var j = 98; j > 1; j--){
+	for (var i = 1; i < 59; i++){
+		for (var j = 1; j < 69; j++){
+			if (self.checkAlive(self.board[i][j].alive, i, j) == true && self.board[i][j].alive == true){
+				self.board[i][j].new_alive = true;
+				self.board[i][j].updateColors(0, 255, 0);
+			}
+			else if (self.checkAlive(self.board[i][j].alive, i, j) == true && self.board[i][j].alive == false){
+				self.board[i][j].updateColors(0, 0, 255);
+				self.board[i][j].new_alive = true;
+			}
+			else if (self.board[i][j].alive == true){
+				self.board[i][j].new_alive = false;
+				self.board[i][j].updateColors(255, 0, 0);
+			}
+			else{
+				;
+			}
 			
+			self.updateCSS(i, j);
+		}
+	}
+
+	//maintain a separate 'alive' status for the new configuration of the board.
+	for (var i = 1; i < 59; i++){
+		for (var j = 0; j < 69; j++){
+			self.board[i][j].alive = self.board[i][j].new_alive;
+		}
+	}
+			/*
 			//debugger;
 			var neighbors = self.getNeighbors(i, j);
 
@@ -107,7 +169,7 @@ ColorBoard.prototype.iterate = function(k){
 		    if(self.board[i][j].alive == true) {
 
 		    	//Count the number of red, green and blue neighbors
-		    	for(var k =0; k<neighbors.length; k++){
+		    	for(var k = 0; k < neighbors.length; k++){
 		    		if (self.board[neighbors[k][0]][neighbors[k][1]].red > 0 && self.board[neighbors[k][0]][neighbors[k][1]].blue == 0 && self.board[neighbors[k][0]][neighbors[k][1]].green == 0){
 		    			red_count++;
 		    		} else if (self.board[neighbors[k][0]][neighbors[k][1]].red == 0 && self.board[neighbors[k][0]][neighbors[k][1]].blue == 0 && self.board[neighbors[k][0]][neighbors[k][1]].green > 0){
@@ -146,7 +208,13 @@ ColorBoard.prototype.iterate = function(k){
 		} // Inner For Loop
 	} //Outer For Loop
 
-	setTimeout(function(){self.iterate(k + 1)}, 5);
+*/
+
+
+
+	//self.updateCSS(i,j);
+
+	setTimeout(function(){self.iterate(k + 1)}, 50);
 	console.log("Finished iterating");
 
 }//Closes Iterate Func
@@ -180,20 +248,20 @@ ColorBoard.prototype.draw = function(){
 
 ColorBoard.prototype.draw = function(){
 	//var divCount = 10;
-	var left_offset = 400;
+	var left_offset = 375;
 	var top_offset = 75;
 	document.write("<div id=\"main\">");
 	
-	for (var i = 0; i < 100; i++){
-		left_offset = 400;
-		for (var j = 0; j < 100; j++){
+	for (var i = 0; i < 60; i++){
+		left_offset = 375;
+		for (var j = 0; j < 70; j++){
 			document.write("<div id=\"" + i.toString() + "r" + j.toString() + "\" class=\"cell\" style=\"background-color:rgb(" + this.board[i][j].getRed() + "," + 
 				this.board[i][j].getGreen() + "," + this.board[i][j].getBlue() + "); top:"+
 				top_offset +"px; left: " + left_offset + "px;\"></div>");
-			left_offset += 5;
+			left_offset += 10;
 			//divCount++;
 		}
-		top_offset += 5;
+		top_offset += 10;
 	}
 	
 	document.write("</div>");
@@ -203,9 +271,10 @@ ColorBoard.prototype.draw = function(){
 ColorBoard.prototype.addClickHandler = function(i, j){
 	var self = this;
 	$('div#' + i.toString() + "r" + j.toString()).click(function(){
-				self.board[i][j].updateColors(0, 0, 255);
+				self.board[i][j].updateColors(0, 255, 0);
 				console.log("you clicked a cell! " + i +" "+j)
 				self.board[i][j].alive = true;
+				console.log(self.board[i][j].alive)
 				$('div#' + i.toString() + "r" + j.toString()).css("background-color", "rgb(" + self.board[i][j].getRed() + "," + self.board[i][j].getGreen() + "," + self.board[i][j].getBlue() +")");
 			                    										});
 
@@ -217,6 +286,7 @@ ColorBoard.prototype.addDblClickHandler = function(i, j){
 				self.board[i][j].updateColors(0, 255, 0);
 				self.board[i][j].alive = true;
 				console.log("you clicked a cell! " + i +" "+j)
+				console.log(self.board[i][j].alive)
 				$('div#' + i.toString() + "r" + j.toString()).css("background-color", "rgb(" + self.board[i][j].getRed() + "," + self.board[i][j].getGreen() + "," + self.board[i][j].getBlue() +")");
 			                    										});
 
@@ -224,8 +294,8 @@ ColorBoard.prototype.addDblClickHandler = function(i, j){
 
 ColorBoard.prototype.stateChange = function(){
 	var self = this;
-	for (var i = 0; i < 99; i++){
-		for (var j = 0; j < 99; j++){
+	for (var i = 0; i < 100; i++){
+		for (var j = 0; j < 100; j++){
 			self.addClickHandler(i, j);
 			self.addDblClickHandler(i, j);
 		}

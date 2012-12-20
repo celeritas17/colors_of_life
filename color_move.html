@@ -8,27 +8,33 @@
 
 <style>
 
+body{
+	background-color:#5dfc0a;
+}
 
-#main {
+
+div {
 	top:75px;
-	left:400px;
+	left:375px;
 	position: fixed;
-	width:500px;
-	height:500px;
-	background-color: thistle;
+	width:700px;
+	height:600px;
+	/*background-color: thistle;*/
+	
 
 	}
 
 div div {
-	width: 5px;
-	height: 5px;
+	width: 10px;
+	height: 10px;
 	position:fixed;
+	background-color: red;
 	/*border-style: dotted;*/		
 }
 
 .cell {
-	width: 5px;
-	height: 5px;
+	width: 10px;
+	height: 10px;
 	position:fixed;
 	/*border-style: dotted;*/
 }
@@ -42,7 +48,7 @@ div div {
 </head>
 
 <body>
-<button onClick="setTimeout(function(){test.iterate(10);}, 1000);" >Button</button>
+<button onClick="setTimeout(function(){test.iterate(1);}, 1000);" >Go!</button>
 <embed src="baud.mp3" hidden>
 </body>
 
