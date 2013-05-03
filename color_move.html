@@ -3,47 +3,18 @@
 <html>
 
 <head>
-
-<script type="text/javascript" src="jquery.js"></script>
-
-<style>
-
-
-#main {
-	top:75px;
-	left:400px;
-	position: fixed;
-	width:500px;
-	height:500px;
-	background-color: thistle;
-
-	}
-
-div div {
-	width: 5px;
-	height: 5px;
-	position:fixed;
-	/*border-style: dotted;*/		
-}
-
-.cell {
-	width: 5px;
-	height: 5px;
-	position:fixed;
-	/*border-style: dotted;*/
-}
-
-
-
-</style>
-
-<script type="text/javascript" src="color_move.js"></script>
-
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<script type="text/javascript" src="color_move2.js"></script>
+<link rel="stylesheet" type="text/css" href="color_move.css">
 </head>
 
 <body>
-<button onClick="setTimeout(function(){test.iterate(10);}, 1000);" >Button</button>
-<embed src="baud.mp3" hidden>
+<button onClick="setTimeout(function(){test.iterate(1);}, 1000);" >Go!</button>
+<embed src="baud.mp3" hidden="True" loop="True">
+
+<div id="f2012"><h1>Fall 2012</h1></div>
+<div id="hacker"><h1><em>Hacker</em></h1></div>
+<div id="school"><h1><em>School</em></h1></div>
 </body>
 
 </html>
