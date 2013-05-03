@@ -1,0 +1,51 @@
+body{
+	background-color:#5dfc0a;
+	font-style: bold;
+	
+}
+
+
+div {
+	top:75px;
+	left:375px;
+	position: fixed;
+	width:700px;
+	height:600px;
+	font-family:courier, monospace;
+	
+
+	}
+
+div div {
+	width: 10px;
+	height: 10px;
+	position:fixed;
+	background-color: red;
+}
+
+.cell {
+	width: 10px;
+	height: 10px;
+	position:fixed;
+}
+
+#hacker{
+	left:130px;
+	top:300px;
+	font-size: 2em;
+	width:200px;
+}
+
+#school{
+	left:1085px;
+	top:300px;
+	font-size: 2em;
+	width:200px;
+}
+
+#f2012{
+	top:10px;
+	left:650px;
+	height:75px;
+	width:600px;
+}
